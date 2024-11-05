@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0  # Alterado para MySQL 8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aws_project01
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 12345678
+    ports:
+      - "3306:3306"
