@@ -1,0 +1,124 @@
+{
+ "Parameters": {
+  "databasePassword": {
+   "Type": "String",
+   "Description": "The RDS instance password"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "Rds01SubnetGroup7C0866B6": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for Rds01 database",
+    "SubnetIds": [
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefVpc01PrivateSubnet1SubnetAA8F14B1D2DB62B8"
+     },
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefVpc01PrivateSubnet2SubnetAF389DF0CA6B8B79"
+     },
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefVpc01PrivateSubnet3Subnet570791A9D4E064F3"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "Rds/Rds01/SubnetGroup/Default"
+   }
+  },
+  "Rds014018A640": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "10",
+    "AllowMajorVersionUpgrade": true,
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.micro",
+    "DBInstanceIdentifier": "aws-project-o1-db",
+    "DBSubnetGroupName": {
+     "Ref": "Rds01SubnetGroup7C0866B6"
+    },
+    "Engine": "mysql",
+    "EngineVersion": "8.0",
+    "MasterUserPassword": {
+     "Ref": "databasePassword"
+    },
+    "MasterUsername": "admin",
+    "MultiAZ": false,
+    "PubliclyAccessible": false,
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputFnGetAttVpc01F824461ADefaultSecurityGroupB47B3935"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "Rds/Rds01/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WMwQ6CMBBEv4V7u4KJeFcSoxcNfIDZljWpQCHdrRwI/24aw8nTzLzMzB6K8gB5hjNr23a6dwaWRtB26vzyDww4kFBQNfEYgyWFMz9Dy7BUKGiQ6epZ0FtSTTSe5BLGOKVtdfoDW3VN8R5lipLc9r2qG35wVxwhhzJ7s3M6RC9uIKh/+gU3yOsorgAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "Rds/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "rdsendpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Rds014018A640",
+     "Endpoint.Address"
+    ]
+   },
+   "Export": {
+    "Name": "rds-endpoint"
+   }
+  },
+  "rdspassword": {
+   "Value": {
+    "Ref": "databasePassword"
+   },
+   "Export": {
+    "Name": "rds-password"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
